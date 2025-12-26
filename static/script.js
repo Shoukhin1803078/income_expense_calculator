@@ -1,11 +1,11 @@
 const apiBase = '/api';
 
-// --- Multi-User: Device ID Logic ---
 function getDeviceId() {
-    let deviceId = localStorage.getItem('device_id');
+    // Demo Mode: Use sessionStorage so data 'resets' when tab is closed
+    let deviceId = sessionStorage.getItem('device_id');
     if (!deviceId) {
         deviceId = crypto.randomUUID();
-        localStorage.setItem('device_id', deviceId);
+        sessionStorage.setItem('device_id', deviceId);
     }
     return deviceId;
 }

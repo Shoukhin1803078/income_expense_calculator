@@ -1,0 +1,20 @@
+[
+  {
+    "id": "88dd6b58-98f4-417d-94a0-772f81eeaed7",
+    "type": "expense",
+    "amount": 3000.0,
+    "category": "tshirt",
+    "date": "2025-12-27",
+    "note": "",
+    "created_at": "2025-12-27T01:57:28.278660"
+  },
+  {
+    "id": "31f13de1-4337-4b6a-b3d7-65d53a63270b",
+    "type": "income",
+    "amount": 5000.0,
+    "category": "by tution",
+    "date": "2025-12-27",
+    "note": "",
+    "created_at": "2025-12-27T01:57:28.278660"
+  }
+]
