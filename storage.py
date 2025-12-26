@@ -4,7 +4,11 @@ from typing import List, Optional
 from datetime import date, datetime
 from model import Transaction, TransactionType
 
-DATA_DIR = "data"
+# Check if running on Vercel (or other read-only cloud envs)
+if os.environ.get("VERCEL"):
+    DATA_DIR = "/tmp"
+else:
+    DATA_DIR = "data"
 
 # Helper to handle date serialization
 class DateTimeEncoder(json.JSONEncoder):
