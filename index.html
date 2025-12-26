@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Finance Tracker</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-text">
+                <i class="fas fa-wallet"></i> <span>FinTrack</span>
+            </div>
+            <button class="sidebar-close-btn" onclick="toggleSidebar()"><i class="fas fa-chevron-left"></i></button>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#" class="active"><i class="fas fa-th-large"></i> <span
+                        data-i18n="nav_dashboard">Dashboard</span></a></li>
+            <li><a href="#"><i class="fas fa-exchange-alt"></i> <span
+                        data-i18n="nav_transactions">Transactions</span></a></li>
+            <li><a href="#"><i class="fas fa-chart-pie"></i> <span data-i18n="nav_analytics">Analytics</span></a></li>
+            <li><a href="#"><i class="fas fa-cog"></i> <span data-i18n="nav_settings">Settings</span></a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <!-- Navbar -->
+        <nav class="navbar">
+            <div class="nav-title" style="display: flex; align-items: center; gap: 15px;">
+                <button class="hamburger-btn" onclick="toggleSidebar()"
+                    style="display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-primary);">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h2 data-i18n="dashboard_overview">Dashboard</h2>
+            </div>
+            <div class="nav-controls">
+                <button id="lang-toggle" class="lang-btn">🇺🇸</button>
+                <button id="theme-toggle" class="theme-btn"><i class="fas fa-moon"></i></button>
+                <!-- <div class="user-profile">
+                    <span>Admin</span>
+                    <div class="avatar">A</div>
+                </div> -->
+            </div>
+        </nav>
+
+        <!-- Content Area -->
+        <div class="content">
+            <!-- Summary Cards -->
+            <section class="summary-cards">
+                <div class="card">
+                    <h3 data-i18n="total_income">Total Income</h3>
+                    <p id="total-income" class="text-success">৳0</p>
+                </div>
+                <div class="card">
+                    <h3 data-i18n="total_expense">Total Expense</h3>
+                    <p id="total-expense" class="text-danger">৳0</p>
+                </div>
+                <div class="card">
+                    <h3 data-i18n="current_balance">Current Balance</h3>
+                    <p id="current-balance" class="text-primary">৳0</p>
+                </div>
+            </section>
+
+            <!-- Charts Row -->
+            <section class="charts-section">
+                <div class="chart-card">
+                    <h3 data-i18n="expense_breakdown">Expense Breakdown</h3>
+                    <canvas id="expenseCategoryChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3 data-i18n="monthly_overview">Monthly Overview</h3>
+                    <canvas id="monthlyTrendChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3 data-i18n="daily_activity">Daily Activity</h3>
+                    <canvas id="dailyTrendChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Bottom Grid -->
+            <section class="dashboard-grid">
+                <!-- Add Transaction Form -->
+                <div class="form-card">
+                    <h2 data-i18n="add_transaction">Add Transaction</h2>
+                    <form id="transaction-form">
+                        <select id="t-type">
+                            <option value="expense" data-i18n="opt_expense">Expense</option>
+                            <option value="income" data-i18n="opt_income">Income</option>
+                        </select>
+                        <input type="number" id="t-amount" placeholder="Amount (৳)" required>
+                        <input type="text" id="t-category" placeholder="Category (e.g. Food, Salary)" required>
+                        <input type="date" id="t-date" required>
+                        <input type="text" id="t-note" placeholder="Note (optional)">
+                        <button type="submit" data-i18n="btn_add_transaction">Add Transaction</button>
+                    </form>
+                </div>
+
+                <!-- Transaction List -->
+                <div class="list-card">
+                    <h2 data-i18n="recent_history">Recent History</h2>
+                    <div class="filters">
+                        <button onclick="filterTransactions('all')" class="filter-btn active"
+                            data-i18n="filter_all">All</button>
+                        <button onclick="filterTransactions('income')" class="filter-btn"
+                            data-i18n="filter_income">Income</button>
+                        <button onclick="filterTransactions('expense')" class="filter-btn"
+                            data-i18n="filter_expense">Expense</button>
+                    </div>
+                    <ul id="history-list">
+                        <!-- Items via JS -->
+                    </ul>
+                </div>
+            </section>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2025 Md Al Amin Tokder. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Floating Chatbit (Fixed Position) -->
+    <div class="chat-widget">
+        <div id="chat-popup" class="chat-container-popup hidden">
+            <div class="chat-header">
+                <span><i class="fas fa-robot"></i> <span data-i18n="ai_assistant">AI Assistant</span></span>
+                <i class="fas fa-times" style="cursor: pointer;" onclick="toggleChat()"></i>
+            </div>
+            <div id="chat-body" class="chat-body">
+                <div class="chat-message bot" data-i18n="chat_welcome">
+                    Hi! I can help you track expenses. <br>
+                    Try: "Spent 500 for lunch"
+                </div>
+            </div>
+
+            <div class="chat-footer">
+                <form id="chat-form">
+                    <div class="input-group">
+                        <input type="text" id="chat-input" placeholder="Type here..." required>
+                        <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <button class="chat-toggle-btn" onclick="toggleChat()">
+            <i class="fas fa-comment-dots"></i>
+        </button>
+    </div>
+
+    <!-- Visitor Counter -->
+    <!-- <div style="
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 99999;
+    ">
+    <a href='http://www.freevisitorcounters.com'>
+        www.freevisitorcounters.com
+    </a>
+    <script type='text/javascript' src='https://www.freevisitorcounters.com/auth.php?id=a3bbbe25ed3fd73b0f3d494b5b79bc53c8424d20'></script>
+    <script type="text/javascript" src="https://www.freevisitorcounters.com/en/home/counter/1467008/t/0"></script>
+    </div> -->
+
+    <!-- <div style="
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 99999;
+    ">
+        <a href='http://www.freevisitorcounters.com'>
+            www.freevisitorcounters.com
+        </a>
+        <script type='text/javascript'
+            src='https://www.freevisitorcounters.com/auth.php?id=40a3bba357465725148bce69e0ef868fa6c8c4fb'></script>
+        <script type="text/javascript" src="https://www.freevisitorcounters.com/en/home/counter/1467009/t/9"></script>
+    </div> -->
+
+    <div style="
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 99999;
+    ">
+        <a href='http://www.freevisitorcounters.com'>
+            www.freevisitorcounters.com
+        </a>
+        <script type='text/javascript' src='https://www.freevisitorcounters.com/auth.php?id=c83d7e2c4ea51eb91f0f6a9fd285cd76e0547b7c'></script>
+        <script type="text/javascript" src="https://www.freevisitorcounters.com/en/home/counter/1467011/t/4"></script>
+    </div>
+
+
+
+
+    <script src="/static/script.js"></script>
+</body>
+
+</html>
